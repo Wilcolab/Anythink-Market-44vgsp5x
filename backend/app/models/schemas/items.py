@@ -1,6 +1,8 @@
 from typing import List, Optional
 
+import os
 import requests
+import openai
 
 from pydantic import BaseModel, Field
 
@@ -10,11 +12,14 @@ from app.models.schemas.rwschema import RWSchema
 DEFAULT_ITEMS_LIMIT = 20
 DEFAULT_ITEMS_OFFSET = 0
 
+openai.api_key = ("OPENAI_API_KEY")
+
 def CreateAiImage(title):
     response = openai.Image.create(
         prompt = title,
         n = 1
         size = "256x256"
+        url = 
     )
 
 class ItemForResponse(RWSchema, Item):

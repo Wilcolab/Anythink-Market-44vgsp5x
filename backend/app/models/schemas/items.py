@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+import requests
+
 from pydantic import BaseModel, Field
 
 from app.models.domain.items import Item
@@ -8,6 +10,12 @@ from app.models.schemas.rwschema import RWSchema
 DEFAULT_ITEMS_LIMIT = 20
 DEFAULT_ITEMS_OFFSET = 0
 
+def CreateAiImage(title):
+    response = openai.Image.create(
+        prompt = title,
+        n = 1
+        size = "256x256"
+    )
 
 class ItemForResponse(RWSchema, Item):
     tags: List[str] = Field(..., alias="tagList")
@@ -23,7 +31,8 @@ class ItemInCreate(RWSchema):
     body: Optional[str] = None
     image: Optional[str] = None
     tags: List[str] = Field([], alias="tagList")
-
+    if image == None:
+        image = CreateAiImage
 
 class ItemInUpdate(RWSchema):
     title: Optional[str] = None

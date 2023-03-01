@@ -25,10 +25,10 @@ class ItemInCreate(RWSchema):
     body: Optional[str] = None
     image: Optional[str] = None
     tags: List[str] = Field([], alias="tagList")
-    if image == "None"
+    if image == "None":
         response = openai.Image.create(
-            prompt = title
-            n=1
+            prompt = title,
+            n=1,
             size="256x256"
             )
         image_url = response['data'][0]['url']

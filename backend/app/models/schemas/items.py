@@ -5,6 +5,8 @@ from pydantic import BaseModel, Field
 from app.models.domain.items import Item
 from app.models.schemas.rwschema import RWSchema
 
+import openai
+
 DEFAULT_ITEMS_LIMIT = 20
 DEFAULT_ITEMS_OFFSET = 0
 
@@ -23,6 +25,13 @@ class ItemInCreate(RWSchema):
     body: Optional[str] = None
     image: Optional[str] = None
     tags: List[str] = Field([], alias="tagList")
+    if image == "None"
+        response = openai.Image.create(
+            prompt = title
+            n=1
+            size="256x256"
+            )
+        image_url = response['data'][0]['url']
 
 
 class ItemInUpdate(RWSchema):

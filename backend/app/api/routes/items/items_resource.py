@@ -25,6 +25,10 @@ from app.resources import strings
 from app.services.items import check_item_exists, get_slug_for_item
 from app.services.event import send_event
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import os
 import openai
 
@@ -80,12 +84,16 @@ async def create_new_item(
         body=item_create.body,
         seller=user,
         tags=item_create.tags,
-        image=openai.Image.create(
-            prompt = title,
-            n=1,
-            size="256x256"
-            )
+        image=item_create.image
     )
+    if (item.image == None):
+        response = openai.createImage(
+            prompt=item.title,
+            n=1,
+            size="256x256"  
+        )
+        image_url = response['data'][0]['url']
+        item.image = image_url
     send_event('item_created', {'item': item_create.title})
     return ItemInResponse(item=ItemForResponse.from_orm(item))
 

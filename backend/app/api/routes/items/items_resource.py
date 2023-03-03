@@ -25,6 +25,11 @@ from app.resources import strings
 from app.services.items import check_item_exists, get_slug_for_item
 from app.services.event import send_event
 
+import os
+import openai
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 router = APIRouter()
 
 
@@ -75,7 +80,11 @@ async def create_new_item(
         body=item_create.body,
         seller=user,
         tags=item_create.tags,
-        image=item_create.image
+        image=openai.Image.create(
+            prompt = title,
+            n=1,
+            size="256x256"
+            )
     )
     send_event('item_created', {'item': item_create.title})
     return ItemInResponse(item=ItemForResponse.from_orm(item))

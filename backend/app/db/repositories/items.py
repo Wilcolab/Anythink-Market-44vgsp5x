@@ -19,6 +19,10 @@ from app.db.repositories.tags import TagsRepository
 from app.models.domain.items import Item
 from app.models.domain.users import User
 
+import os
+import openai
+
+
 SELLER_USERNAME_ALIAS = "seller_username"
 SLUG_ALIAS = "slug"
 
@@ -56,6 +60,16 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
             if tags:
                 await self._tags_repo.create_tags_that_dont_exist(tags=tags)
                 await self._link_item_with_tags(slug=slug, tags=tags)
+
+            if image == None:
+                PROMPT = title
+                openai.api_key = os.getenv("OPENAI_API_KEY")
+                response = openai.Image.create(
+                    prompt=PROMPT,
+                    n=1,
+                    size="256x256",
+                )
+                image = response(["data"][0]["url"]
 
         return await self._get_item_from_db_record(
             item_row=item_row,

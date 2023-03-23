@@ -21,6 +21,11 @@ services:
       - DEBUG=True
       - DATABASE_URL=postgresql://postgres:@postgres-python:5432/anythink-market
       - GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN=${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}
+      - ENGINE_BASE_URL=http://localhost:3003
+      - WILCO_ID=0
+      - HOSTNAME=host.docker.internal
+
+      
     depends_on:
       - "postgres-python"
 

@@ -45,6 +45,7 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
         body: Optional[str] = None,
         image: Optional[str] = None,
         tags: Optional[Sequence[str]] = None,
+
     ) -> Item:
         async with self.connection.transaction():
             item_row = await queries.create_new_item(
@@ -61,15 +62,7 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
                 await self._tags_repo.create_tags_that_dont_exist(tags=tags)
                 await self._link_item_with_tags(slug=slug, tags=tags)
 
-            if image == None:
-                PROMPT = title
-                openai.api_key = os.getenv("OPENAI_API_KEY")
-                response = openai.Image.create(
-                    prompt=PROMPT,
-                    n=1,
-                    size="256x256",
-                )
-                image = response(["data"][0]["url"]
+
 
         return await self._get_item_from_db_record(
             item_row=item_row,
@@ -77,7 +70,15 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
             seller_username=item_row[SELLER_USERNAME_ALIAS],
             requested_user=seller,
         )
-
+        if image == None:
+                PROMPT = title
+                openai.api_key = os.getenv("OPENAI_API_KEY")
+                response = openai.Image.create(
+                    prompt=PROMPT,
+                    n=1,
+                    size="256x256",
+                )
+                image = response(["data"][0]["url"])
     async def update_item(  # noqa: WPS211
         self,
         *,

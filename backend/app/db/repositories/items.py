@@ -19,7 +19,8 @@ from app.db.repositories.tags import TagsRepository
 from app.models.domain.items import Item
 from app.models.domain.users import User
 
-import os
+# Import the necessary libraries
+import requests
 import openai
 
 
@@ -70,15 +71,7 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
             seller_username=item_row[SELLER_USERNAME_ALIAS],
             requested_user=seller,
         )
-        if image == None:
-                PROMPT = title
-                openai.api_key = os.getenv("OPENAI_API_KEY")
-                response = openai.Image.create(
-                    prompt=PROMPT,
-                    n=1,
-                    size="256x256",
-                )
-                image = response(["data"][0]["url"])
+
     async def update_item(  # noqa: WPS211
         self,
         *,
@@ -366,3 +359,37 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
             self.connection,
                 slug=slug,
         )
+
+# Fetch OpenAI API key
+
+openai_api_key = os.environ.get('OPENAI_API_KEY')
+
+# Function to check if item has image
+def check_image(item):
+  # Make a request to the item's URL
+  response = requests.get(item['url'])
+  
+  # Check if the response contains an image
+  if 'image' in response.headers.get('Content-Type'):
+    return True
+  else:
+    return False
+
+# Function to generate OpenAI image from user title
+def generate_image(title):
+  # Generate an image using OpenAI
+  response = openai.Completion.create(
+    prompt=title,
+    size="256x256"
+ 
+  )
+  
+  # Return the generated image
+  return response['choices'][0]['text']
+
+# Iterate through items
+for item in items:
+  # Check if item has image
+  if not check_image(item):
+    # Generate OpenAI image from user title
+    item['image'] = generate_image(item['title'])
